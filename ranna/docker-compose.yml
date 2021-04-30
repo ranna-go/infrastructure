@@ -1,0 +1,81 @@
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:latest"
+    command:
+      - "--providers.docker"
+      - "--providers.file.directory=/etc/traefik/dynamic_conf"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--providers.docker.exposedByDefault=false"
+      - "--certificatesResolvers.le.acme.email=contact@zekro.de"
+      - "--certificatesResolvers.le.acme.storage=/etc/certstore/acme.json"
+      - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=http"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/config:/etc/traefik/dynamic_conf"
+      - "./traefik/certstore:/etc/certstore"
+    restart: "on-failure"
+
+  ranna-public:
+    image: "ghcr.io/ranna-go/ranna:latest"
+    environment:
+      HOSTROOTDIR:             "/var/opt/ranna-public"
+      API.MAXOUTPUTLEN:        "1M"
+      SANDBOX.MEMORY:          "150M"
+      SANDBOX.TIMEOUTSECONDS:  "20"
+      SANDBOX.STREAMBUFFERCAP: "1M"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/opt/ranna-public:/var/opt/ranna-public"
+    expose:
+      - "8080"
+    restart: "on-failure"
+    labels:
+      traefik.enable:                                                           "true"
+      traefik.http.routers.ranna-public.entrypoints:                            "https"
+      traefik.http.routers.ranna-public.tls:                                    "true"
+      traefik.http.routers.ranna-public.tls.certresolver:                       "le"
+      traefik.http.routers.ranna-public.rule:                                   "Host(`public.ranna.zekro.de`)"
+      traefik.http.routers.ranna-public.middlewares:                            "ranna-cors"
+      traefik.http.middlewares.ranna-cors.headers.accesscontrolallowmethods:    "GET,POST"
+      traefik.http.middlewares.ranna-cors.headers.accesscontrolalloworiginlist: "*"
+      traefik.http.middlewares.ranna-cors.headers.accesscontrolallowheaders:    "*"
+      traefik.http.middlewares.ranna-cors.headers.accesscontrolmaxage:          "3600"
+      traefik.http.middlewares.ranna-cors.headers.addvaryheader:                "true"
+      
+      traefik.http.routers.ranna-public-limited.entrypoints:                    "https"
+      traefik.http.routers.ranna-public-limited.tls:                            "true"
+      traefik.http.routers.ranna-public-limited.rule:                           "Host(`public.ranna.zekro.de`) && PathPrefix(`/v1/exec`)"
+      traefik.http.routers.ranna-public-limited.middlewares:                    "ranna-rl,ranna-cors"
+      traefik.http.middlewares.ranna-rl.ratelimit.average:                      "5"
+      traefik.http.middlewares.ranna-rl.ratelimit.period:                       "1m"
+      traefik.http.middlewares.ranna-rl.ratelimit.burst:                        "5"
+      
+  ranna-private:
+    image: "ghcr.io/ranna-go/ranna:latest"
+    environment:
+      HOSTROOTDIR:             "/var/opt/ranna-private"
+      API.MAXOUTPUTLEN:        "1M"
+      SANDBOX.MEMORY:          "150M"
+      SANDBOX.TIMEOUTSECONDS:  "20"
+      SANDBOX.STREAMBUFFERCAP: "1M"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/opt/ranna-private:/var/opt/ranna-private"
+    expose:
+      - "8080"
+    restart: "on-failure"
+    labels:
+      traefik.enable:                                              "true"
+      traefik.http.routers.ranna-private.entrypoints:              "https"
+      traefik.http.routers.ranna-private.tls:                      "true"
+      traefik.http.routers.ranna-private.tls.certresolver:         "le"
+      traefik.http.routers.ranna-private.rule:                     "Host(`private.ranna.zekro.de`)"
+      traefik.http.routers.ranna-private.middlewares:              "ranna-ipwl"
+      traefik.http.middlewares.ranna-ipwl.ipwhitelist.sourcerange: "62.171.147.124"

@@ -1,0 +1,41 @@
+http:
+  routers:
+    https-redirect:
+      rule: 'HostRegexp(`{any:.*}`)'
+      middlewares: ['https-redirect']
+      service: 'noop'
+      entryPoints: ['http']
+
+    sub-redirect:
+      rule: 'HostRegexp(`{.*}.zekro.de`)'
+      middlewares: ['sub-redirect']
+      service: 'noop'
+      entryPoints: ['https']
+      tls: {}
+      priority: 1
+
+    ip-redirect:
+      rule: 'Host(`62.171.147.124`)'
+      middlewares: ['sub-redirect']
+      service: 'noop'
+      entryPoints: ['https']
+      tls: {}
+
+  
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: 'https'
+        permanent: true
+
+    sub-redirect:
+      redirectRegex:
+        regex: '.*'
+        replacement: 'https://zekro.de'
+
+
+  services:
+    noop:
+      loadBalancer:
+        servers:
+          - url: ''

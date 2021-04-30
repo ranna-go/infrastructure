@@ -1,0 +1,77 @@
+version: "3.1"
+
+services:
+  traefik:
+    image: "traefik:latest"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.file.directory=/etc/traefik/dynamic_conf"
+      - "--metrics.prometheus=true"
+      - "--entryPoints.metrics.address=:9091"
+      - "--metrics.prometheus.entryPoint=metrics"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--providers.docker.exposedByDefault=false"
+      - "--certificatesResolvers.le.acme.email=contact@zekro.de"
+      - "--certificatesResolvers.le.acme.storage=/etc/certstore/acme.json"
+      - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=http"
+      - "--certificatesResolvers.ledns.acme.email=contact@zekro.de"
+      - "--certificatesResolvers.ledns.acme.storage=/etc/certstore/acme-dns.json"
+      - "--certificatesResolvers.ledns.acme.dnschallenge.provider=desec"
+      - "--certificatesresolvers.ledns.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
+    environment:
+      DESEC_TOKEN: "*****"
+    expose:
+      - "9091"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/config:/etc/traefik/dynamic_conf"
+      - "/etc/cert:/etc/cert:ro"
+      - "/etc/certstore:/etc/certstore"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: "always"
+    labels:
+      traefik.enable:                                         "true"
+      traefik.http.routers.traefik.entrypoints:               "https"
+      traefik.http.routers.traefik.tls:                       "true"
+      traefik.http.routers.traefik.rule:                      "Host(`traefik.zekro.de`)"
+      traefik.http.services.traefik.loadbalancer.server.port: "8080"
+
+  postgres:
+    image: "postgres:12-alpine"
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./postgres:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: "*****"
+      POSTGRES_USER:     "*****"
+    restart: "always"
+
+  rannasnippets:
+    image: "ghcr.io/ranna-go/snippets:latest"
+    expose:
+      - "80"
+    restart: "on-failure"
+    environment:
+      CONNECTIONSTRINGS__POSTGRESQL: "Host=postgres;Database=rannasnippets;Username=rannasnippets;Password=*****"
+    depends_on:
+      - "postgres"
+    labels:
+      traefik.enable:                                             "true"
+      traefik.http.routers.rannasnippets.entrypoints:             "https"
+      traefik.http.routers.rannasnippets.tls:                     "true"
+      traefik.http.routers.rannasnippets.tls.certresolver:        "le"
+      traefik.http.routers.rannasnippets.rule:                    "Host(`snippets.ranna.zekro.de`)"
+
+      traefik.http.routers.rannasnippets-limited.entrypoints:     "https"
+      traefik.http.routers.rannasnippets-limited.tls:             "true"
+      traefik.http.routers.rannasnippets-limited.rule:            "Host(`snippets.ranna.zekro.de`) && Path(`/v1/snippets`)"
+      traefik.http.routers.rannasnippets-limited.middlewares:     "rannasnippet-rl"
+      traefik.http.middlewares.rannasnippet-rl.ratelimit.average: "2"
+      traefik.http.middlewares.rannasnippet-rl.ratelimit.period:  "1m"
+      traefik.http.middlewares.rannasnippet-rl.ratelimit.burst:   "2"

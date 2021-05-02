@@ -22,6 +22,14 @@ services:
       - "./traefik/certstore:/etc/certstore"
     restart: "on-failure"
 
+  gatekeeper:
+    image: "ghcr.io/ranna-go/gatekeeper:latest"
+    expose:
+      - "80"
+    environment:
+      BASICTOKENPOOL: "generic:*****,shinpuru:*****"
+    restart: "on-failure"
+
   ranna-public:
     image: "ghcr.io/ranna-go/ranna:latest"
     environment:
@@ -77,5 +85,6 @@ services:
       traefik.http.routers.ranna-private.tls:                      "true"
       traefik.http.routers.ranna-private.tls.certresolver:         "le"
       traefik.http.routers.ranna-private.rule:                     "Host(`private.ranna.zekro.de`)"
-      traefik.http.routers.ranna-private.middlewares:              "ranna-ipwl"
+      traefik.http.routers.ranna-private.middlewares:              "ranna-ipwl,ranna-auth"
       traefik.http.middlewares.ranna-ipwl.ipwhitelist.sourcerange: "62.171.147.124"
+      traefik.http.middlewares.ranna-auth.forwardauth.address:     "http://gatekeeper/auth/basic_token"

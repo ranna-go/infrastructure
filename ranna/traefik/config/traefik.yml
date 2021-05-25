@@ -26,6 +26,14 @@ http:
         regex: '.*'
         replacement: 'https://app.ranna.zekro.de'
 
+    cors:
+      headers:
+        accesscontrolallowmethods:    "GET,POST"
+        accesscontrolalloworiginlist: "*"
+        accesscontrolallowheaders:    "*"
+        accesscontrolmaxage:          "3600"
+        addvaryheader:                "true"
+
 
   services:
     noop:

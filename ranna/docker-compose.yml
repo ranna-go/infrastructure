@@ -21,6 +21,12 @@ services:
       - "./traefik/certstore:/etc/certstore"
     restart: "on-failure"
 
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
+    restart: "on-failure"
+
   gatekeeper:
     image: "ghcr.io/ranna-go/gatekeeper:latest"
     expose:
@@ -54,20 +60,24 @@ services:
       traefik.http.routers.ranna-public.tls: "true"
       traefik.http.routers.ranna-public.tls.certresolver: "le"
       traefik.http.routers.ranna-public.rule: "Host(`public.ranna.zekro.de`)"
-      traefik.http.routers.ranna-public.middlewares: "ranna-cors"
-      traefik.http.middlewares.ranna-cors.headers.accesscontrolallowmethods: "GET,POST"
-      traefik.http.middlewares.ranna-cors.headers.accesscontrolalloworiginlist: "*"
-      traefik.http.middlewares.ranna-cors.headers.accesscontrolallowheaders: "*"
-      traefik.http.middlewares.ranna-cors.headers.accesscontrolmaxage: "3600"
-      traefik.http.middlewares.ranna-cors.headers.addvaryheader: "true"
+      traefik.http.routers.ranna-public.middlewares: "cors@file"
 
-      traefik.http.routers.ranna-public-limited.entrypoints: "https"
-      traefik.http.routers.ranna-public-limited.tls: "true"
-      traefik.http.routers.ranna-public-limited.rule: "Host(`public.ranna.zekro.de`) && PathPrefix(`/v1/exec`)"
-      traefik.http.routers.ranna-public-limited.middlewares: "ranna-rl,ranna-cors"
-      traefik.http.middlewares.ranna-rl.ratelimit.average: "5"
-      traefik.http.middlewares.ranna-rl.ratelimit.period: "1m"
-      traefik.http.middlewares.ranna-rl.ratelimit.burst: "5"
+  kyasshu-public:
+    image: "ghcr.io/ranna-go/kyasshu:latest"
+    environment:
+      RANNA_ENDPOINT: "http://ranna-public:8080"
+      REDIS_ENDPOINT: "redis://redis:6379/0"
+    expose:
+      - "8080"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.kyasshu.entrypoints: "https"
+      traefik.http.routers.kyasshu.tls: "true"
+      traefik.http.routers.kyasshu.rule: "Host(`public.ranna.zekro.de`) && PathPrefix(`/v1/exec`)"
+      traefik.http.routers.kyasshu.middlewares: "kyasshu-rl,cors@file"
+      traefik.http.middlewares.kyasshu-rl.ratelimit.average: "5"
+      traefik.http.middlewares.kyasshu-rl.ratelimit.period: "1m"
+      traefik.http.middlewares.kyasshu-rl.ratelimit.burst: "5"
 
   ranna-private:
     image: "ghcr.io/ranna-go/ranna:latest"

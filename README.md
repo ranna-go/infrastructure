@@ -6,9 +6,9 @@ This repository holds all kind of config files, DNS registries and documentation
 
 Below, you find a simplified scheme how requests are routed through the ranna "network".
 
-![](https://i.imgur.com/8fpW8Du.png)
+![](https://i.imgur.com/SDUI9PR.png)
 
-- `public.ranna.zekro.de` is a publicly available endpoint to one ranna instance. `POST` requests to the `/exec` endpoint are rate limited to reduce load and prevent abuse.
+- `public.ranna.zekro.de` is a publicly available endpoint to one ranna instance. `POST` requests to the `/exec` endpoint are rate limited to reduce load and prevent abuse. Also, in front of ranna, there is kyassu, which acts as response cache for re-occuring requests to reduce load when embedding snippets, for example.
 
 - `private.ranna.zekro.de` is an endpoint to another ranna instance with other parameters and no limit restrictions but protected by an IP whitelist middleware and ForwardAuth middleware using gatekeeper to validate authorization headers. This will be used as endpoint for shinpuru code ececution in the future.
 
@@ -18,7 +18,7 @@ Below, you find a simplified scheme how requests are routed through the ranna "n
 
 The actual deployment infrastructure is actually a bit more sophisticated, as you can see below.
 
-![](https://i.imgur.com/SZq7PJ1.png)
+![](https://i.imgur.com/jObeCV2.png)
 
 The two ranna instances are deployed on a seperate, isolated server. If an attacker achives container breakout from a ranna worker, there would be the risk of data leakage. To prevent this, the snippet API and database is deployed to a seperate server. The static files of the web app are served by GitHub Pages.
 

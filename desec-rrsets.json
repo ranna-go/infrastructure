@@ -17,6 +17,14 @@
   },
   {
     "domain": "zekro.de",
+    "subname": "app.snippets.ranna",
+    "name": "app.snippets.ranna.zekro.de.",
+    "records": ["ranna-go.github.io."],
+    "ttl": 3600,
+    "type": "CNAME"
+  },
+  {
+    "domain": "zekro.de",
     "subname": "*.ranna",
     "name": "*.ranna.zekro.de.",
     "records": ["78.47.70.215"],

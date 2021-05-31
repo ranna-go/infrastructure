@@ -6,7 +6,7 @@ This repository holds all kind of config files, DNS registries and documentation
 
 Below, you find a simplified scheme how requests are routed through the ranna "network".
 
-![](https://i.imgur.com/SDUI9PR.png)
+![](https://i.imgur.com/KVfIhwb.png)
 
 - `public.ranna.zekro.de` is a publicly available endpoint to one ranna instance. `POST` requests to the `/exec` endpoint are rate limited to reduce load and prevent abuse. Also, in front of ranna, there is kyassu, which acts as response cache for re-occuring requests to reduce load when embedding snippets, for example.
 
@@ -16,9 +16,11 @@ Below, you find a simplified scheme how requests are routed through the ranna "n
 
 - `app.ranna.zekro.de` is the web app to access `public.ranna.zekro.de` and `snippets.ranna.zekro.de` via a simple UI. These static files are served by GitHub Pages.
 
+- `app.snippets.ranna.zekro.de` is the web app to access `snippets.ranna.zekro.de` via a simple UI to get API tokens, list and manage linked snippets. These static files are served by GitHub Pages.
+
 The actual deployment infrastructure is actually a bit more sophisticated, as you can see below.
 
-![](https://i.imgur.com/jObeCV2.png)
+![](https://i.imgur.com/EUowWmz.png)
 
 The two ranna instances are deployed on a seperate, isolated server. If an attacker achives container breakout from a ranna worker, there would be the risk of data leakage. To prevent this, the snippet API and database is deployed to a seperate server. The static files of the web app are served by GitHub Pages.
 

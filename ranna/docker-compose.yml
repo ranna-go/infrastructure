@@ -74,7 +74,7 @@ services:
       traefik.http.routers.kyasshu.entrypoints: "https"
       traefik.http.routers.kyasshu.tls: "true"
       traefik.http.routers.kyasshu.rule: "Host(`public.ranna.zekro.de`) && PathPrefix(`/v1/exec`)"
-      traefik.http.routers.kyasshu.middlewares: "kyasshu-rl,cors@file"
+      traefik.http.routers.kyasshu.middlewares: "cors@file,kyasshu-rl"
       traefik.http.middlewares.kyasshu-rl.ratelimit.average: "5"
       traefik.http.middlewares.kyasshu-rl.ratelimit.period: "1m"
       traefik.http.middlewares.kyasshu-rl.ratelimit.burst: "5"

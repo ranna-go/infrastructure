@@ -38,7 +38,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.traefik.entrypoints: "https"
       traefik.http.routers.traefik.tls: "true"
-      traefik.http.routers.traefik.rule: "Host(`traefik.zekro.de`)"
+      traefik.http.routers.traefik.rule: "Host(`traefik.dev`)"
       traefik.http.services.traefik.loadbalancer.server.port: "8080"
 
   postgres:
@@ -59,7 +59,7 @@ services:
     restart: "on-failure"
     environment:
       CONNECTIONSTRINGS__POSTGRESQL: "Host=postgres;Database=rannasnippets;Username=rannasnippets;Password=*****"
-      CORS__ALLOWEDORIGINS: "https://app.snippets.ranna.zekro.de,https://app.ranna.zekro.de"
+      CORS__ALLOWEDORIGINS: "https://app.snippets.ranna.dev,https://app.ranna.dev"
     depends_on:
       - "postgres"
     labels:
@@ -67,11 +67,11 @@ services:
       traefik.http.routers.rannasnippets.entrypoints: "https"
       traefik.http.routers.rannasnippets.tls: "true"
       traefik.http.routers.rannasnippets.tls.certresolver: "le"
-      traefik.http.routers.rannasnippets.rule: "Host(`snippets.ranna.zekro.de`)"
+      traefik.http.routers.rannasnippets.rule: "Host(`snippets.ranna.dev`)"
 
       traefik.http.routers.rannasnippets-limited.entrypoints: "https"
       traefik.http.routers.rannasnippets-limited.tls: "true"
-      traefik.http.routers.rannasnippets-limited.rule: "Host(`snippets.ranna.zekro.de`) && Path(`/v1/snippets`) && Method(`POST`)"
+      traefik.http.routers.rannasnippets-limited.rule: "Host(`snippets.ranna.dev`) && Path(`/v1/snippets`) && Method(`POST`)"
       traefik.http.routers.rannasnippets-limited.middlewares: "rannasnippet-rl"
       traefik.http.middlewares.rannasnippet-rl.ratelimit.average: "2"
       traefik.http.middlewares.rannasnippet-rl.ratelimit.period: "1m"

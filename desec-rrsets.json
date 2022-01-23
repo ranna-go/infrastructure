@@ -1,40 +1,48 @@
 [
   {
-    "domain": "zekro.de",
-    "subname": "snippets.ranna",
-    "name": "snippets.ranna.zekro.de.",
+    "domain": "ranna.dev",
+    "subname": "snippets",
+    "name": "snippets.ranna.dev.",
     "records": ["62.171.147.124"],
     "ttl": 3600,
     "type": "A"
   },
   {
-    "domain": "zekro.de",
-    "subname": "app.ranna",
-    "name": "app.ranna.zekro.de.",
+    "domain": "ranna.dev",
+    "subname": "app",
+    "name": "app.ranna.dev.",
     "records": ["ranna-go.github.io."],
     "ttl": 3600,
     "type": "CNAME"
   },
   {
-    "domain": "zekro.de",
-    "subname": "app.snippets.ranna",
-    "name": "app.snippets.ranna.zekro.de.",
+    "domain": "ranna.dev",
+    "subname": "app.snippets",
+    "name": "app.snippets.ranna.dev.",
     "records": ["ranna-go.github.io."],
     "ttl": 3600,
     "type": "CNAME"
   },
   {
-    "domain": "zekro.de",
-    "subname": "*.ranna",
-    "name": "*.ranna.zekro.de.",
+    "domain": "ranna.dev",
+    "subname": "languages",
+    "name": "languages.ranna.dev.",
+    "records": ["ranna-go.github.io."],
+    "ttl": 3600,
+    "type": "CNAME"
+  },
+  {
+    "domain": "ranna.dev",
+    "subname": "*",
+    "name": "*.ranna.dev.",
     "records": ["78.47.70.215"],
     "ttl": 3600,
     "type": "A"
   },
   {
-    "domain": "zekro.de",
-    "subname": "ranna",
-    "name": "ranna.zekro.de.",
+    "domain": "ranna.dev",
+    "subname": "",
+    "name": "ranna.dev.",
     "records": ["78.47.70.215"],
     "ttl": 3600,
     "type": "A"

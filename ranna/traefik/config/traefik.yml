@@ -7,7 +7,7 @@ http:
       entryPoints: ['http']
 
     sub-redirect:
-      rule: 'Host(`ranna.zekro.de`)'
+      rule: 'Host(`ranna.dev`)'
       middlewares: ['app-redirect']
       service: 'noop'
       entryPoints: ['https']
@@ -24,7 +24,7 @@ http:
     app-redirect:
       redirectRegex:
         regex: '.*'
-        replacement: 'https://app.ranna.zekro.de'
+        replacement: 'https://app.ranna.dev'
 
     cors:
       headers:

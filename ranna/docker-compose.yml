@@ -59,7 +59,7 @@ services:
       traefik.http.routers.ranna-public.entrypoints: "https"
       traefik.http.routers.ranna-public.tls: "true"
       traefik.http.routers.ranna-public.tls.certresolver: "le"
-      traefik.http.routers.ranna-public.rule: "Host(`public.ranna.zekro.de`)"
+      traefik.http.routers.ranna-public.rule: "Host(`public.ranna.dev`)"
       traefik.http.routers.ranna-public.middlewares: "cors@file"
 
   kyasshu-public:
@@ -73,7 +73,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.kyasshu.entrypoints: "https"
       traefik.http.routers.kyasshu.tls: "true"
-      traefik.http.routers.kyasshu.rule: "Host(`public.ranna.zekro.de`) && PathPrefix(`/v1/exec`)"
+      traefik.http.routers.kyasshu.rule: "Host(`public.ranna.dev`) && PathPrefix(`/v1/exec`)"
       traefik.http.routers.kyasshu.middlewares: "cors@file,kyasshu-rl"
       traefik.http.middlewares.kyasshu-rl.ratelimit.average: "5"
       traefik.http.middlewares.kyasshu-rl.ratelimit.period: "1m"
@@ -103,7 +103,7 @@ services:
       traefik.http.routers.ranna-private.entrypoints: "https"
       traefik.http.routers.ranna-private.tls: "true"
       traefik.http.routers.ranna-private.tls.certresolver: "le"
-      traefik.http.routers.ranna-private.rule: "Host(`private.ranna.zekro.de`)"
+      traefik.http.routers.ranna-private.rule: "Host(`private.ranna.dev`)"
       traefik.http.routers.ranna-private.middlewares: "ranna-ipwl,ranna-auth"
       traefik.http.middlewares.ranna-ipwl.ipwhitelist.sourcerange: "62.171.147.124"
       traefik.http.middlewares.ranna-auth.forwardauth.address: "http://gatekeeper/auth/basic_token"

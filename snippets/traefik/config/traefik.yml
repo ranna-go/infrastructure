@@ -7,7 +7,7 @@ http:
       entryPoints: ['http']
 
     sub-redirect:
-      rule: 'HostRegexp(`{.*}.zekro.de`)'
+      rule: 'HostRegexp(`{.*}.ranna.dev`)'
       middlewares: ['sub-redirect']
       service: 'noop'
       entryPoints: ['https']
